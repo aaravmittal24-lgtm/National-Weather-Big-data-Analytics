@@ -1,0 +1,17 @@
+# National Weather Big Data Analytics Platform -- Python analytics layer
+#
+# Install with:
+#     pip install -r requirements.txt
+
+# Data handling and numerics
+pandas>=2.0
+numpy>=1.24
+
+# HTTP calls to OpenWeather and NASA POWER
+requests>=2.31
+
+# The interactive Python front end (streamlit run app.py)
+streamlit>=1.40
+
+# Testing
+pytest>=7.4

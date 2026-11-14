@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>National Weather Big Data Analytics Platform</title>
+<meta name="description" content="One weather and earth-observation backbone, five decision terminals — markets, agriculture, logistics, disaster response and wildlife.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#10163a; --ink2:#3a4272; --ink3:#6a729c;
+  --sans:"Outfit",system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+html,body{margin:0}
+body{
+  font:18px/1.6 var(--sans);color:var(--ink);-webkit-font-smoothing:antialiased;
+  background:
+    radial-gradient(900px 600px at 0% 0%,rgba(139,92,246,.18),transparent 60%),
+    radial-gradient(900px 600px at 100% 25%,rgba(34,211,238,.20),transparent 60%),
+    radial-gradient(900px 600px at 20% 100%,rgba(251,191,36,.18),transparent 60%),
+    #f4f7ff;
+  overflow-x:hidden;
+}
+button{font:inherit;color:inherit;cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid #7c3aed;outline-offset:3px}
+.wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+kbd{font-family:var(--mono);font-size:.8em;border:1px solid #c5cbe8;border-bottom-width:3px;border-radius:7px;padding:2px 9px;background:#fff;color:var(--ink)}
+
+/* ================= SPLASH INTRO ================= */
+.splash{position:fixed;inset:0;z-index:100;display:grid;place-items:center;overflow:hidden;color:#fff;
+  background:linear-gradient(170deg,#1b1464 0%,#3b1fa8 30%,#0b78d1 68%,#06b6d4 100%);
+  transition:opacity .8s ease,transform .8s ease,filter .8s ease;cursor:pointer}
+.splash.done{opacity:0;transform:scale(1.08);filter:blur(10px);pointer-events:none}
+.splash .flash{position:absolute;inset:0;background:#fff;opacity:0;animation:lightning 5s 1.6s infinite;pointer-events:none}
+@keyframes lightning{0%,92%,100%{opacity:0}93%{opacity:.55}94%{opacity:0}95.5%{opacity:.4}97%{opacity:0}}
+.s-sun{position:absolute;right:9%;top:9%;width:150px;height:150px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fffbe0,#ffe066 45%,#ffab2e);
+  box-shadow:0 0 0 28px rgba(255,224,102,.12),0 0 0 62px rgba(255,224,102,.07),0 0 140px rgba(255,200,60,.8);
+  animation:sunfloat 7s ease-in-out infinite}
+.s-sun:before{content:"";position:absolute;inset:-70px;border-radius:50%;
+  background:repeating-conic-gradient(rgba(255,230,120,.28) 0 6deg,transparent 6deg 24deg);
+  -webkit-mask-image:radial-gradient(circle,transparent 38%,#000 40%,transparent 70%);mask-image:radial-gradient(circle,transparent 38%,#000 40%,transparent 70%);
+  animation:spin 30s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes sunfloat{50%{transform:translateY(-18px) scale(1.04)}}
+.cloud{position:absolute;height:60px;width:200px;border-radius:60px;background:linear-gradient(#fff,#d7ecff);opacity:.9;
+  filter:drop-shadow(0 18px 24px rgba(10,20,80,.25));animation:drift 22s ease-in-out infinite alternate}
+.cloud:before,.cloud:after{content:"";position:absolute;background:inherit;border-radius:50%}
+.cloud:before{width:86px;height:86px;left:26px;top:-42px}
+.cloud:after{width:108px;height:108px;left:84px;top:-58px}
+@keyframes drift{to{translate:120px -14px}}
+.c1{top:16%;left:6%}
+.c2{top:30%;right:18%;transform:scale(.7);opacity:.6;animation-duration:30s;animation-direction:alternate-reverse}
+.c3{top:56%;left:42%;transform:scale(.55);opacity:.4;animation-duration:26s}
+.s-drop{position:absolute;top:-30px;width:3px;height:26px;border-radius:3px;background:linear-gradient(transparent,#c9f4ff);opacity:.75;animation:fall linear infinite}
+@keyframes fall{to{transform:translateY(110vh)}}
+.s-sea{position:absolute;left:-10%;right:-10%;bottom:0;height:24%;overflow:hidden}
+.s-sea i{position:absolute;left:-5%;width:110%;height:140px;border-radius:50%;border-top:3px solid rgba(255,255,255,.4);background:linear-gradient(rgba(255,255,255,.12),rgba(4,40,120,.5));animation:wave 7s ease-in-out infinite alternate}
+.s-sea i:nth-child(1){top:20%}
+.s-sea i:nth-child(2){top:45%;animation-duration:9s;animation-delay:-2s;opacity:.8}
+.s-sea i:nth-child(3){top:70%;animation-duration:11s;animation-delay:-4s;opacity:.6}
+@keyframes wave{to{transform:translateX(5%) translateY(-18px) scaleX(1.08)}}
+
+.splash .core{position:relative;z-index:2;text-align:center;padding:28px;max-width:760px;width:100%}
+.s-mark{width:150px;height:150px;filter:drop-shadow(0 20px 40px rgba(0,0,0,.35));animation:pop .9s cubic-bezier(.2,1.4,.4,1) both}
+@keyframes pop{from{transform:scale(.2) rotate(-25deg);opacity:0}to{transform:none;opacity:1}}
+.s-mark .rays{transform-origin:77px 39px;animation:spin 22s linear infinite}
+.s-mark .drops{animation:dropbob 1.2s ease-in-out infinite alternate}
+@keyframes dropbob{to{transform:translateY(6px);opacity:.5}}
+.s-title{margin:24px 0 6px;font-size:clamp(34px,6.2vw,72px);line-height:1.04;font-weight:900;letter-spacing:-.02em;
+  text-shadow:0 6px 40px rgba(0,0,30,.35);animation:rise .9s .35s both}
+.s-title em{font-style:normal;background:linear-gradient(90deg,#ffe066,#ff9f5a,#ff6fb5);-webkit-background-clip:text;background-clip:text;color:transparent}
+.s-sub{font-family:var(--mono);font-size:clamp(14px,1.8vw,19px);letter-spacing:.3em;text-transform:uppercase;color:#d5f4ff;animation:rise .9s .55s both}
+@keyframes rise{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes fadein{to{opacity:1}}
+.boot{list-style:none;margin:30px auto 0;padding:0;max-width:560px;text-align:left;font-family:var(--mono);font-size:clamp(14px,1.7vw,17px);line-height:1.9;color:#eaf8ff;min-height:190px}
+.boot li{display:flex;gap:12px;align-items:baseline;animation:rise .45s both}
+.boot .ck{color:#7dffb5;font-weight:700}
+.boot .ar{color:#ffe066;font-weight:700}
+.s-prog{margin:24px auto 0;width:min(460px,86%);height:8px;border-radius:10px;background:rgba(255,255,255,.22);overflow:hidden}
+.s-prog i{display:block;height:100%;width:0;border-radius:10px;background:linear-gradient(90deg,#ffe066,#ff9f5a,#ff6fb5,#7dffb5);box-shadow:0 0 22px rgba(255,255,255,.7);animation:prog 4.6s .2s cubic-bezier(.4,.1,.2,1) forwards}
+@keyframes prog{to{width:100%}}
+.s-skip{margin-top:24px;font-family:var(--mono);font-size:15px;color:#fff;background:rgba(255,255,255,.16);border:1.5px solid rgba(255,255,255,.4);border-radius:40px;padding:12px 26px;backdrop-filter:blur(8px);opacity:0;animation:fadein .6s 1s forwards,nudge 2s 2s ease-in-out infinite}
+.s-skip:hover{background:rgba(255,255,255,.3)}
+@keyframes nudge{50%{transform:translateY(-4px)}}
+
+/* ================= TOP BAR ================= */
+.top{position:sticky;top:0;z-index:40;color:#fff;background:linear-gradient(100deg,#4c1d95,#6d28d9 40%,#0891b2);box-shadow:0 10px 34px rgba(76,29,149,.35)}
+.top .wrap{display:flex;align-items:center;gap:18px;height:74px}
+.logo{display:flex;align-items:center;gap:14px;min-width:0}
+.logo svg{flex:none;animation:wob 6s ease-in-out infinite}
+@keyframes wob{50%{transform:rotate(-8deg) scale(1.08)}}
+.logo b{font-size:clamp(16px,2vw,22px);font-weight:800;letter-spacing:.005em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);padding:5px 14px;border-radius:30px}
+.live:before{content:"";width:10px;height:10px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 0 rgba(74,222,128,.8);animation:pulse 1.6s infinite}
+@keyframes pulse{70%{box-shadow:0 0 0 10px rgba(74,222,128,0)}100%{box-shadow:0 0 0 0 rgba(74,222,128,0)}}
+.clock{margin-left:auto;text-align:right;font-family:var(--mono);font-size:19px;font-weight:700;line-height:1.2}
+.clock small{display:block;font-size:13px;font-weight:400;color:#d6e8ff}
+@media(max-width:700px){.live{display:none}.top .wrap{height:64px}.clock{font-size:16px}}
+
+/* ================= HERO ================= */
+.hero{position:relative;overflow:hidden;color:#fff;padding:90px 0 80px;isolation:isolate;
+  background:linear-gradient(125deg,#4c1d95 0%,#7c3aed 28%,#2563eb 62%,#06b6d4 100%);background-size:200% 200%;animation:skyshift 16s ease-in-out infinite alternate}
+@keyframes skyshift{to{background-position:100% 100%}}
+.hero-fx{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.hero-fx canvas{position:absolute;inset:0;width:100%;height:100%}
+.h-sun{position:absolute;right:9%;top:12%;width:170px;height:170px;border-radius:50%;
+  background:radial-gradient(circle at 35% 30%,#fffbe0,#ffe066 50%,#ffab2e);
+  box-shadow:0 0 0 30px rgba(255,224,102,.12),0 0 0 70px rgba(255,224,102,.06),0 0 150px rgba(255,200,60,.8);animation:sunfloat 8s ease-in-out infinite}
+.h-sun:before{content:"";position:absolute;inset:-90px;border-radius:50%;background:repeating-conic-gradient(rgba(255,230,120,.3) 0 5deg,transparent 5deg 20deg);
+  -webkit-mask-image:radial-gradient(circle,transparent 30%,#000 32%,transparent 68%);mask-image:radial-gradient(circle,transparent 30%,#000 32%,transparent 68%);animation:spin 40s linear infinite}
+.hero .cloud{opacity:.35;filter:none}
+.hero .c1{top:58%;left:-2%;transform:scale(1.2)}
+.hero .c2{top:12%;right:34%;transform:scale(.8);opacity:.28}
+.hero .c3{top:70%;right:12%;transform:scale(.9);opacity:.22}
+.eyebrow{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:15px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;padding:8px 20px;border-radius:40px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.4);backdrop-filter:blur(8px);animation:rise .8s both}
+.hero h1{margin:26px 0 0;font-size:clamp(44px,8vw,104px);line-height:.98;font-weight:900;letter-spacing:-.035em;max-width:14ch;text-wrap:balance;animation:rise .9s .1s both}
+.hero h1 span{background:linear-gradient(90deg,#ffe066,#ffb26b,#ff7eb6,#ffe066);background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:gshift 6s linear infinite}
+@keyframes gshift{to{background-position:250% 0}}
+.hero p{margin:26px 0 0;font-size:clamp(19px,2.3vw,26px);line-height:1.5;color:#eaf4ff;max-width:46ch;animation:rise .9s .25s both}
+.hero p b{color:#ffe066}
+.kstrip{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin:46px 0 0;animation:rise .9s .4s both}
+.kstrip div{padding:22px 24px;border-radius:22px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.35);backdrop-filter:blur(14px);box-shadow:0 20px 50px rgba(20,10,80,.22);transition:transform .35s,background .35s}
+.kstrip div:hover{transform:translateY(-8px) scale(1.03);background:rgba(255,255,255,.26)}
+.kstrip dt{font-size:15px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#cfe8ff}
+.kstrip dd{margin:6px 0 0;font-size:clamp(20px,2.2vw,27px);font-weight:800;line-height:1.2}
+.kstrip dd small{font-size:16px;font-weight:500;color:#e5f1ff;display:block;margin-top:2px}
+.kstrip .big{font-size:clamp(44px,5vw,64px);line-height:1;font-weight:900;color:#ffe066}
+@media(max-width:980px){.kstrip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:560px){.kstrip{grid-template-columns:1fr}.h-sun{width:90px;height:90px;right:6%;top:6%}}
+
+/* ticker */
+.ticker{overflow:hidden;background:#10163a;color:#fff;border-top:3px solid #ffe066;border-bottom:3px solid #22d3ee;white-space:nowrap}
+.ticker div{display:inline-block;padding:15px 0;font-family:var(--mono);font-size:17px;font-weight:700;letter-spacing:.08em;animation:marq 38s linear infinite}
+.ticker span{margin:0 26px}
+.ticker b{color:#ffe066}
+.ticker em{font-style:normal;color:#22d3ee}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* ================= SERVICES ================= */
+.shead{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap;margin:72px 0 30px}
+.shead h2{margin:0;font-size:clamp(34px,5vw,56px);font-weight:900;letter-spacing:-.03em;line-height:1.05}
+.shead h2 span{background:linear-gradient(90deg,#7c3aed,#2563eb,#06b6d4);-webkit-background-clip:text;background-clip:text;color:transparent}
+.shead .hint{font-size:18px;color:var(--ink2);max-width:40ch}
+
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:30px}
+.grid .card:nth-child(5){grid-column:1/-1}
+@media(max-width:900px){.grid{grid-template-columns:1fr}.grid .card:nth-child(5){grid-column:auto}}
+.grid.prep .card{opacity:0}
+.reveal{opacity:0;transform:translateY(40px) scale(.97);transition:opacity .8s cubic-bezier(.2,.8,.2,1),transform .8s cubic-bezier(.2,.8,.2,1)}
+.reveal.on{opacity:1;transform:none}
+
+.card{--a:#7c3aed;--b:#06b6d4;position:relative;display:flex;flex-direction:column;border-radius:30px;background:#fff;overflow:hidden;
+  border:2px solid color-mix(in srgb,var(--a) 22%,#fff);box-shadow:0 16px 44px -16px color-mix(in srgb,var(--a) 45%,transparent);
+  transition:transform .4s cubic-bezier(.2,.9,.2,1.1),box-shadow .4s,border-color .4s;cursor:pointer;transform-style:preserve-3d}
+.card.on:hover,.card:hover{transform:translateY(-12px) scale(1.012);border-color:var(--a);box-shadow:0 36px 70px -20px color-mix(in srgb,var(--a) 70%,transparent)}
+.card .glow{position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(420px circle at var(--mx,50%) var(--my,50%),color-mix(in srgb,var(--b) 22%,transparent),transparent 60%)}
+.card:hover .glow{opacity:1}
+.c-top{position:relative;height:150px;overflow:hidden;background:linear-gradient(120deg,var(--a),var(--b));background-size:180% 180%;animation:skyshift 8s ease-in-out infinite alternate}
+.c-top .fx{position:absolute;inset:0;overflow:hidden}
+.c-ic{position:absolute;left:26px;bottom:-34px;width:96px;height:96px;border-radius:28px;display:grid;place-items:center;background:#fff;color:var(--a);
+  box-shadow:0 14px 30px color-mix(in srgb,var(--a) 45%,transparent),0 0 0 6px rgba(255,255,255,.55);transition:transform .5s cubic-bezier(.2,1.6,.4,1)}
+.card:hover .c-ic{transform:rotate(-10deg) scale(1.12) translateY(-6px)}
+.c-ic svg{width:50px;height:50px}
+.c-idx{position:absolute;right:22px;top:18px;font-family:var(--mono);font-size:20px;font-weight:700;color:#fff;background:rgba(255,255,255,.22);border:1.5px solid rgba(255,255,255,.55);border-radius:14px;padding:6px 16px;backdrop-filter:blur(6px)}
+.c-body{padding:56px 30px 22px;display:flex;flex-direction:column;gap:16px;flex:1}
+.card h3{margin:0;font-size:clamp(26px,3vw,34px);font-weight:900;line-height:1.1;letter-spacing:-.02em}
+.card .cat{font-size:18px;font-weight:700;color:var(--a)}
+.card .desc{margin:0;font-size:18.5px;line-height:1.65;color:var(--ink2)}
+.chips{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto;padding-top:6px}
+.chip{font-size:15.5px;font-weight:700;color:var(--ink2);background:#f1f3ff;border:1.5px solid #e1e5fb;border-radius:30px;padding:6px 16px;transition:transform .25s}
+.chip.data{color:#fff;background:linear-gradient(100deg,var(--a),var(--b));border-color:transparent;box-shadow:0 8px 18px -6px color-mix(in srgb,var(--a) 60%,transparent)}
+.card:hover .chip{transform:translateY(-3px)}
+.act{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:20px 30px 26px}
+.go{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:12px;min-width:240px;padding:17px 30px;border-radius:18px;font-size:20px;font-weight:800;color:#fff;
+  background:linear-gradient(100deg,var(--a),var(--b));background-size:200% 100%;box-shadow:0 14px 30px -8px color-mix(in srgb,var(--a) 70%,transparent);transition:transform .25s,box-shadow .25s,background-position .5s}
+.go:hover{transform:translateY(-4px) scale(1.04);background-position:100% 0;box-shadow:0 22px 40px -8px color-mix(in srgb,var(--a) 80%,transparent)}
+.go:active{transform:scale(.97)}
+.go:after{content:"";position:absolute;top:0;left:-80%;width:50%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);animation:sheen 3.6s ease-in-out infinite}
+@keyframes sheen{0%,60%{left:-80%}100%{left:140%}}
+.go .arr{display:inline-block;transition:transform .3s;font-size:24px}
+.go:hover .arr{transform:translate(5px,-5px)}
+.note{font-size:16px;font-weight:600;color:var(--ink3)}
+.ripple{position:absolute;border-radius:50%;background:rgba(255,255,255,.6);transform:scale(0);animation:rip .7s ease-out forwards;pointer-events:none}
+@keyframes rip{to{transform:scale(4);opacity:0}}
+
+/* card scene fx */
+.fx i{position:absolute;display:block}
+.fx .rd{top:-30px;width:3px;height:22px;border-radius:3px;background:linear-gradient(transparent,rgba(255,255,255,.9));animation:fall2 1.1s linear infinite}
+@keyframes fall2{to{transform:translateY(200px)}}
+.fx .sunr{right:30px;top:18px;width:74px;height:74px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fffbe0,#ffe066 55%,#ffab2e);box-shadow:0 0 60px rgba(255,224,102,.9);animation:sunfloat 5s ease-in-out infinite}
+.fx .sunr:before{content:"";position:absolute;inset:-26px;border-radius:50%;background:repeating-conic-gradient(rgba(255,240,150,.7) 0 5deg,transparent 5deg 30deg);-webkit-mask-image:radial-gradient(circle,transparent 45%,#000 47%,transparent 72%);mask-image:radial-gradient(circle,transparent 45%,#000 47%,transparent 72%);animation:spin 14s linear infinite}
+.fx .mc{height:36px;width:120px;border-radius:40px;background:rgba(255,255,255,.75);animation:drift 9s ease-in-out infinite alternate}
+.fx .mc:before,.fx .mc:after{content:"";position:absolute;background:inherit;border-radius:50%}
+.fx .mc:before{width:52px;height:52px;left:16px;top:-26px}.fx .mc:after{width:64px;height:64px;left:48px;top:-34px}
+.fx .bolt{right:80px;top:14px;width:46px;height:96px;background:#fff7a8;clip-path:polygon(55% 0,10% 55%,45% 55%,30% 100%,90% 40%,55% 40%);filter:drop-shadow(0 0 16px #fff36b);animation:bolt 2.8s infinite}
+@keyframes bolt{0%,60%,100%{opacity:0}62%{opacity:1}64%{opacity:.1}66%{opacity:1}72%{opacity:0}}
+.fx .leaf{width:20px;height:28px;border-radius:2px 100% 2px 100%;background:rgba(255,255,255,.7);animation:leaf 6s ease-in-out infinite}
+@keyframes leaf{0%{transform:translate(0,-30px) rotate(0)}50%{transform:translate(40px,80px) rotate(160deg)}100%{transform:translate(-10px,190px) rotate(320deg)}}
+.fx .road{left:0;right:0;bottom:22px;height:6px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.85) 0 26px,transparent 26px 50px);animation:road 1s linear infinite}
+@keyframes road{to{background-position:-50px 0}}
+.fx .truck{bottom:30px;left:20%;width:62px;height:26px;border-radius:6px 12px 4px 4px;background:#fff;animation:truck 6s ease-in-out infinite alternate;box-shadow:0 0 0 0 #fff}
+@keyframes truck{to{left:70%}}
+
+/* about */
+.about{margin:80px 0 20px;position:relative;overflow:hidden;color:#fff;border-radius:34px;padding:48px 48px;background:linear-gradient(120deg,#4c1d95,#2563eb 55%,#06b6d4);box-shadow:0 30px 70px -24px rgba(76,29,149,.6)}
+.about:before{content:"";position:absolute;right:-60px;top:-60px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fffbe0,#ffe066 55%,#ffab2e);box-shadow:0 0 120px rgba(255,200,60,.8);opacity:.9;animation:sunfloat 8s ease-in-out infinite}
+.about h2{position:relative;margin:0 0 16px;font-size:clamp(30px,4vw,44px);font-weight:900;letter-spacing:-.02em}
+.about p{position:relative;margin:0 0 16px;font-size:20px;line-height:1.65;color:#eaf4ff;max-width:68ch}
+.about p:last-child{margin-bottom:0}
+.about b{color:#ffe066}
+@media(max-width:600px){.about{padding:32px 24px}.about p{font-size:18px}}
+footer{color:var(--ink2);font-size:16px;padding:36px 0 60px;line-height:1.7;text-align:center}
+
+/* launch overlay (shown when a dashboard link is clicked; link itself opens normally) */
+.launch{position:fixed;inset:0;z-index:90;display:grid;place-items:center;pointer-events:none;opacity:0;color:#fff;text-align:center;
+  background:radial-gradient(circle at var(--lx,50%) var(--ly,50%),var(--la,#7c3aed),var(--lb,#06b6d4) 70%,#10163a);clip-path:circle(0% at var(--lx,50%) var(--ly,50%));
+  transition:clip-path .7s cubic-bezier(.6,0,.2,1),opacity .4s}
+.launch.on{opacity:1;clip-path:circle(150% at var(--lx,50%) var(--ly,50%))}
+.launch .ring{width:110px;height:110px;margin:0 auto 26px;border-radius:50%;border:8px solid rgba(255,255,255,.3);border-top-color:#fff;animation:spin .8s linear infinite}
+.launch h3{margin:0;font-size:clamp(30px,5vw,56px);font-weight:900;letter-spacing:-.02em}
+.launch p{margin:10px 0 0;font-size:20px;color:#eaf4ff;font-family:var(--mono)}
+
+@media(prefers-reduced-motion:reduce){
+  *,*:before,*:after{animation:none!important;transition:none!important}
+  .reveal{opacity:1;transform:none}
+  .grid.prep .card{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= SPLASH ================= -->
+<div class="splash" id="splash" role="status" aria-label="Loading the platform">
+  <div class="flash"></div>
+  <div class="s-sun" aria-hidden="true"></div>
+  <div class="cloud c1" aria-hidden="true"></div>
+  <div class="cloud c2" aria-hidden="true"></div>
+  <div class="cloud c3" aria-hidden="true"></div>
+  <div id="sdrops" aria-hidden="true"></div>
+  <div class="s-sea" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="core">
+    <svg class="s-mark" viewBox="0 0 120 120" aria-hidden="true">
+      <defs><linearGradient id="gm" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#7dd3fc"/><stop offset="1" stop-color="#c4b5fd"/></linearGradient></defs>
+      <rect x="3" y="3" width="114" height="114" rx="30" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.5)" stroke-width="2"/>
+      <circle cx="77" cy="39" r="17" fill="#ffd166"/>
+      <g class="rays" stroke="#ffd166" stroke-width="3.5" stroke-linecap="round"><path d="M77 12v-6M77 66v-6M50 39h-6M110 39h-6M58 20l-5-5M101 63l-5-5M96 20l5-5M53 63l5-5"/></g>
+      <path d="M27 76c0-10 8-18 18-18 3 0 6 1 8 2 4-11 14-18 26-16 11 2 18 12 17 23 8 1 14 8 14 16 0 9-7 16-17 16H45c-10 0-18-9-18-23z" fill="url(#gm)" stroke="#fff" stroke-width="2.5"/>
+      <g class="drops" stroke="#b8f3ff" stroke-width="4" stroke-linecap="round"><path d="M49 91l-5 10M70 94l-5 10M91 91l-5 10"/></g>
+    </svg>
+    <h1 class="s-title">National Weather <em>Big Data</em> Analytics</h1>
+    <div class="s-sub">Platform &middot; India</div>
+    <ul class="boot" id="boot"></ul>
+    <div class="s-prog"><i></i></div>
+    <button class="s-skip" id="skip" type="button">Tap or press any key to enter ↵</button>
+  </div>
+</div>
+
+<!-- ================= TOP BAR ================= -->
+<header class="top">
+  <div class="wrap">
+    <div class="logo">
+      <svg width="40" height="40" viewBox="0 0 26 26" aria-hidden="true"><rect width="26" height="26" rx="7" fill="#fff" opacity=".2"/><path d="M5 19 9 12l4 3 4-8 4 6" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/><circle cx="20" cy="7" r="2.3" fill="#ffe066"/></svg>
+      <b>National Weather Big Data Analytics</b>
+    </div>
+    <span class="live">Live Platform</span>
+    <div class="clock" id="clock"></div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero">
+  <div class="hero-fx" aria-hidden="true">
+    <canvas id="rain"></canvas>
+    <div class="h-sun"></div>
+    <div class="cloud c1"></div><div class="cloud c2"></div><div class="cloud c3"></div>
+  </div>
+  <div class="wrap">
+    <span class="eyebrow">☀ Weather · Earth Observation · Decisions</span>
+    <h1>One weather backbone. <span>Five decision terminals.</span></h1>
+    <p>A shared earth-observation and climate data layer — <b>IMD, NASA POWER, Sentinel-2, OpenWeather</b> and <b>CWC</b> — read five different ways: for markets, agriculture, logistics, disaster response and wildlife.</p>
+    <dl class="kstrip">
+      <div><dt>Services</dt><dd><span class="big">5</span><small>terminals</small></dd></div>
+      <div><dt>Domains</dt><dd>Markets · Agri · Logistics · Risk · Environment</dd></div>
+      <div><dt>Data backbone</dt><dd><small>IMD · NASA POWER · Sentinel-2 · OpenWeather · CWC · Mapbox</small></dd></div>
+      <div><dt>Deployment</dt><dd><small id="depline">hosted terminals</small></dd></div>
+    </dl>
+  </div>
+</section>
+
+<div class="ticker" aria-hidden="true"><div id="tick"></div></div>
+
+<main class="wrap">
+  <div class="shead reveal">
+    <h2>Pick your <span>terminal</span></h2>
+    <div class="hint">Click any card, or press <kbd>1</kbd>–<kbd>5</kbd> to open its dashboard in a new tab.</div>
+  </div>
+  <div class="grid" id="grid"></div>
+
+  <div class="about reveal">
+    <h2>About the platform</h2>
+    <p>Each service is an independent terminal that runs on its own. This page is the <b>launcher</b> that ties them into one suite: choose any service to open its full hosted dashboard in a separate browser tab, while this five-service hub stays open here.</p>
+    <p>Data maturity differs by service and is labelled on each card. Some run on <b>live feeds</b> (Sentinel-2, NASA POWER, OpenWeather); others currently run on <b>demonstration or illustrative data</b> while their live sources are wired in. Nothing here is an operational warning system or investment advice.</p>
+  </div>
+</main>
+
+<footer class="wrap">
+  National Weather Big Data Analytics Platform — a student suite of five weather-and-earth-observation terminals for India. Data sources vary by service (IMD, NASA POWER, Sentinel-2, OpenWeather, CWC, Mapbox) and several services use modelled or illustrative data where noted. Not an official forecasting, emergency-response or investment service.
+</footer>
+
+<!-- launch transition overlay -->
+<div class="launch" id="launch" aria-hidden="true">
+  <div><div class="ring"></div><h3 id="lname">Launching…</h3><p>Opening your dashboard in a new tab</p></div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ============================================================
+   SERVICES — URLs below are unchanged (hosted Netlify dashboards).
+   ============================================================ */
+const SERVICES=[
+ {id:'monsoon', name:'Monsoon Alpha Capital', cat:'Markets · Climate quant terminal',
+  url:'https://shiny-beijinho-c380fd.netlify.app/', a:'#8b5cf6', b:'#ec4899', fx:'rain',
+  desc:'Reads live weather for 20 Indian stations against their 1991–2020 normals and turns the departures into sector-tilt signals, with the full IMD monsoon record behind them.',
+  data:'Live OpenWeather + normals', tags:['OpenWeather','IMD record','Sector signals'], icon:'chart'},
+ {id:'agri', name:'AgriWeather Intelligence Engine', cat:'Agriculture · Satellite & agro-climatic',
+  url:'https://agriweather-india-engine.netlify.app/', a:'#16a34a', b:'#eab308', fx:'sun',
+  desc:'Sentinel-2 and NASA POWER over all-India: NDVI vegetation, crop-suitability scoring, soil and rainfall water balance, and an agricultural risk index down to the district.',
+  data:'Live Sentinel-2 + NASA POWER', tags:['Sentinel-2','NASA POWER','Crop suitability'], icon:'leaf'},
+ {id:'nlwie', name:'NLWIE — Logistics & Weather Intelligence', cat:'Logistics · Route & facility risk',
+  url:'https://nlwie-india-engine.netlify.app/', a:'#2563eb', b:'#06b6d4', fx:'road',
+  desc:'Weather-aware GIS for freight: warehouse and depot mapping, corridor segmentation, and a multi-hazard route-risk score across rainfall, visibility, temperature and wind.',
+  data:'Live OpenWeather + Mapbox', tags:['Mapbox','OpenWeather','Route risk'], icon:'route'},
+ {id:'aapda', name:'Aapda Sahayak', cat:'Disaster response · Multi-hazard',
+  url:'https://aapda-sahayak.netlify.app/#overview', a:'#ef4444', b:'#f97316', fx:'storm',
+  desc:'A multi-hazard situation room: citizen reports cleaned, geo-tagged, classified and deduplicated against IMD and CWC data before they surface as district-level intelligence.',
+  data:'Illustrative / simulated', tags:['IMD','CWC','Report triage'], icon:'alert'},
+ {id:'wildcast', name:'WILDCAST India', cat:'Environment · Wildlife & habitat',
+  url:'https://wildcas-india.netlify.app/', a:'#0d9488', b:'#84cc16', fx:'leaf',
+  desc:'Habitat-stress intelligence for protected areas: NDVI and rainfall-deficit screening, fire detections inside park footprints, and a habitat stress score per reserve.',
+  data:'Demonstration data', tags:['NDVI','Fire alerts','Habitat stress'], icon:'tree'},
+];
+
+const ICONS={
+ chart:'<path d="M4 19V5M4 19h16M8 16l3.5-4 3 2.5L20 8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>',
+ leaf:'<path d="M20 4C9 4 5 11 5 17c0 1 .2 2 .5 3C7 14 12 11 18 10c-5 2-9 5-11 11 6 1 15-2 15-14 0-1 0-2-2-3z" stroke-width="1.9" stroke-linejoin="round"/>',
+ route:'<circle cx="6" cy="6" r="2.4" stroke-width="2.2"/><circle cx="18" cy="18" r="2.4" stroke-width="2.2"/><path d="M8 6h7a3 3 0 0 1 0 6H9a3 3 0 0 0 0 6h7" stroke-width="2.2" stroke-linecap="round" fill="none"/>',
+ alert:'<path d="M12 3 2 20h20L12 3z" stroke-width="2.2" stroke-linejoin="round"/><path d="M12 10v5M12 17.5v.01" stroke-width="2.4" stroke-linecap="round"/>',
+ tree:'<path d="M12 2 5 12h4l-3 5h5v5h2v-5h5l-3-5h4L12 2z" stroke-width="1.9" stroke-linejoin="round"/>'
+};
+const svg=k=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor">${ICONS[k]||''}</svg>`;
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $=s=>document.querySelector(s);
+const reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* per-card animated weather scene */
+function scene(t){
+  const r=(a,b)=>(Math.random()*(b-a)+a);
+  let h='';
+  if(t==='rain'){
+    h+='<i class="mc" style="left:8%;top:22px"></i><i class="mc" style="left:52%;top:40px;transform:scale(.7)"></i>';
+    for(let i=0;i<26;i++)h+=`<i class="rd" style="left:${r(2,98).toFixed(1)}%;animation-delay:${(-r(0,1.2)).toFixed(2)}s;animation-duration:${r(.7,1.2).toFixed(2)}s"></i>`;
+  }else if(t==='sun'){
+    h+='<i class="sunr"></i><i class="mc" style="left:6%;top:50px"></i>';
+  }else if(t==='road'){
+    h+='<i class="mc" style="left:10%;top:18px"></i><i class="mc" style="left:56%;top:34px;transform:scale(.7)"></i><i class="truck"></i><i class="road"></i>';
+  }else if(t==='storm'){
+    h+='<i class="mc" style="left:10%;top:16px;background:rgba(40,20,60,.55)"></i><i class="mc" style="left:48%;top:30px;background:rgba(40,20,60,.5)"></i><i class="bolt"></i>';
+    for(let i=0;i<14;i++)h+=`<i class="rd" style="left:${r(2,98).toFixed(1)}%;animation-delay:${(-r(0,1)).toFixed(2)}s"></i>`;
+  }else if(t==='leaf'){
+    h+='<i class="sunr" style="width:54px;height:54px;right:34px;top:20px"></i>';
+    for(let i=0;i<7;i++)h+=`<i class="leaf" style="left:${r(4,92).toFixed(1)}%;animation-delay:${(-r(0,6)).toFixed(1)}s;animation-duration:${r(5,8).toFixed(1)}s"></i>`;
+  }
+  return h;
+}
+
+/* deployment line */
+const ext=SERVICES.filter(s=>/^https?:/.test(s.url)).length;
+$('#depline').textContent=ext+' hosted Netlify terminals';
+
+/* build cards — the button is a real <a href> to the Netlify site, opens in a new tab */
+$('#grid').innerHTML=SERVICES.map((s,i)=>`
+<article class="card reveal" data-id="${s.id}" style="--a:${s.a};--b:${s.b}">
+  <div class="glow"></div>
+  <div class="c-top"><div class="fx">${scene(s.fx)}</div>
+    <div class="c-idx">0${i+1}</div>
+    <div class="c-ic">${svg(s.icon)}</div>
+  </div>
+  <div class="c-body">
+    <div><h3>${esc(s.name)}</h3><div class="cat">${esc(s.cat)}</div></div>
+    <p class="desc">${esc(s.desc)}</p>
+    <div class="chips"><span class="chip data">${esc(s.data)}</span>${s.tags.map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>
+  </div>
+  <div class="act">
+    <a class="go" href="${esc(s.url)}" target="_blank" rel="noopener noreferrer" data-id="${s.id}">Open dashboard <span class="arr" aria-hidden="true">↗</span></a>
+    <span class="note">Opens in a new tab</span>
+  </div>
+</article>`).join('');
+
+/* ticker */
+(function(){
+  const items=['<b>IMD</b> monsoon record','<em>NASA POWER</em> daily climate','<b>Sentinel-2</b> NDVI','<em>OpenWeather</em> live stations','<b>CWC</b> flood gauges','<em>Mapbox</em> route GIS','<b>20</b> Indian stations vs 1991–2020 normals','<em>5</em> decision terminals'];
+  const row=items.map(x=>'<span>'+x+'</span>').join('☀');
+  $('#tick').innerHTML=row+'☀'+row+'☀';
+})();
+
+/* launch animation: runs on click, link still opens normally */
+const L=$('#launch');
+let lt;
+function playLaunch(s,x,y){
+  $('#lname').textContent='Launching '+s.name+'…';
+  L.style.setProperty('--la',s.a);L.style.setProperty('--lb',s.b);
+  L.style.setProperty('--lx',x+'px');L.style.setProperty('--ly',y+'px');
+  L.classList.add('on');L.setAttribute('aria-hidden','false');
+  clearTimeout(lt);
+  lt=setTimeout(()=>{L.classList.remove('on');L.setAttribute('aria-hidden','true');},1700);
+}
+document.addEventListener('visibilitychange',()=>{ if(document.hidden===false){clearTimeout(lt);L.classList.remove('on');} });
+
+document.addEventListener('click',e=>{
+  const a=e.target.closest('a.go');
+  const card=e.target.closest('.card');
+  if(!card) return;
+  const s=SERVICES.find(x=>x.id===card.dataset.id); if(!s) return;
+  if(a){
+    // real link: ripple + overlay, but DO NOT prevent default → opens Netlify in new tab
+    const rc=a.getBoundingClientRect(),d=Math.max(rc.width,rc.height);
+    const rp=document.createElement('span');rp.className='ripple';
+    rp.style.cssText=`width:${d}px;height:${d}px;left:${e.clientX-rc.left-d/2}px;top:${e.clientY-rc.top-d/2}px`;
+    a.appendChild(rp);setTimeout(()=>rp.remove(),700);
+    if(!reduce) playLaunch(s,e.clientX,e.clientY);
+    return;
+  }
+  // clicking elsewhere on the card opens the same hosted site in a new tab
+  window.open(s.url,'_blank','noopener,noreferrer');
+  if(!reduce) playLaunch(s,e.clientX,e.clientY);
+});
+
+/* mouse glow on cards */
+document.addEventListener('mousemove',e=>{
+  const c=e.target.closest&&e.target.closest('.card'); if(!c) return;
+  const r=c.getBoundingClientRect();
+  c.style.setProperty('--mx',(e.clientX-r.left)+'px');c.style.setProperty('--my',(e.clientY-r.top)+'px');
+});
+
+/* keyboard 1–5 */
+document.addEventListener('keydown',e=>{
+  if(/INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return;
+  if(document.getElementById('splash')) return;
+  if(e.key>='1'&&e.key<='9'){
+    const s=SERVICES[+e.key-1];
+    if(s){ window.open(s.url,'_blank','noopener,noreferrer'); if(!reduce) playLaunch(s,innerWidth/2,innerHeight/2); }
+  }
+});
+
+/* scroll reveal */
+function setupReveal(){
+  const els=document.querySelectorAll('.reveal');
+  if(!('IntersectionObserver' in window)||reduce){els.forEach(el=>el.classList.add('on'));return;}
+  let n=0;
+  const io=new IntersectionObserver(es=>{es.forEach(en=>{
+    if(en.isIntersecting){const el=en.target;el.style.transitionDelay=((n++%2)*.12)+'s';el.classList.add('on');io.unobserve(el);setTimeout(()=>{el.style.transitionDelay=''},1200);}
+  });},{threshold:.12});
+  els.forEach(el=>io.observe(el));
+  setTimeout(()=>els.forEach(el=>el.classList.add('on')),9000); // safety
+}
+
+/* hero rain canvas */
+(function(){
+  const cv=$('#rain'); if(!cv||reduce) return;
+  const ctx=cv.getContext('2d'); let W,H,drops=[];
+  function size(){const r=cv.parentNode.getBoundingClientRect();W=cv.width=r.width;H=cv.height=r.height;drops=Array.from({length:Math.round(W/16)},()=>({x:Math.random()*W,y:Math.random()*H,l:10+Math.random()*18,v:5+Math.random()*7}));}
+  size();addEventListener('resize',size);
+  let vis=true;
+  new IntersectionObserver(es=>{vis=es[0].isIntersecting;}).observe(cv);
+  (function frame(){
+    if(vis){
+      ctx.clearRect(0,0,W,H);ctx.strokeStyle='rgba(215,240,255,.45)';ctx.lineWidth=1.6;ctx.lineCap='round';
+      ctx.beginPath();
+      for(const d of drops){ctx.moveTo(d.x,d.y);ctx.lineTo(d.x-d.l*.18,d.y+d.l);d.y+=d.v;d.x-=d.v*.18;if(d.y>H){d.y=-20;d.x=Math.random()*W+40;}}
+      ctx.stroke();
+    }
+    requestAnimationFrame(frame);
+  })();
+})();
+
+/* splash intro */
+(function(){
+  const splash=$('#splash'); const grid=$('#grid');
+  // splash rain
+  const sd=$('#sdrops');
+  if(sd&&!reduce){let h='';for(let i=0;i<46;i++)h+=`<span class="s-drop" style="left:${(Math.random()*100).toFixed(1)}%;animation-duration:${(0.9+Math.random()*.9).toFixed(2)}s;animation-delay:${(-Math.random()*2).toFixed(2)}s;opacity:${(.3+Math.random()*.5).toFixed(2)}"></span>`;sd.innerHTML=h;}
+  if(reduce){splash.remove();setupReveal();return;}
+  const boot=$('#boot');
+  const lines=[['ar','Reading the sky — live weather & earth observation'],['ar','Syncing IMD · NASA POWER · Sentinel-2 · OpenWeather · CWC'],['ar','Preparing five specialist intelligence terminals']].concat(SERVICES.map(x=>['ck',x.name]));
+  let i=0;
+  (function tick(){
+    if(i>=lines.length||splash.classList.contains('done'))return;
+    const li=document.createElement('li');const m=lines[i][0]==='ck'?'✓':'›';
+    li.innerHTML='<span class="'+lines[i][0]+'">'+m+'</span><span>'+esc(lines[i][1])+'</span>';
+    boot.appendChild(li);i++;setTimeout(tick,i<=3?480:320);
+  })();
+  let finished=false;
+  function finish(){
+    if(finished)return;finished=true;
+    splash.classList.add('done');
+    setupReveal();
+    setTimeout(()=>{splash.remove();},900);
+  }
+  const auto=setTimeout(finish,5200);
+  function skip(){clearTimeout(auto);finish();}
+  $('#skip').addEventListener('click',e=>{e.stopPropagation();skip();});
+  splash.addEventListener('click',skip);
+  addEventListener('keydown',function onk(){removeEventListener('keydown',onk);skip();});
+})();
+
+/* clock (IST) */
+function clock(){
+  const d=new Date(Date.now()+(5.5*3600+new Date().getTimezoneOffset()*60)*1000);
+  const p=n=>String(n).padStart(2,'0');
+  $('#clock').innerHTML=p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds())+' IST<small>'+d.toDateString()+'</small>';
+}
+clock();setInterval(clock,1000);
+})();
+</script>
+</body>
+</html>
